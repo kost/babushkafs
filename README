@@ -1,0 +1,58 @@
+./babushkafs.pl: Pluggable filesystem containers
+Copyright (C) Vlatko Kosturjak, Kost. Distributed under GPL
+
+WARNING!
+This is Proof of Concept (PoC) implementation. Do not store important data.
+
+FEATURES
+========
+Mount encrypted filesystem container using FUSE. 
+
+Currently supported containers:
+- fsFile (store filesystem in file)
+- fsNessusPolicies (store filesystem inside Nessus Policy)
+- fsNessusReports (store filesystem inside Nessus Report)
+
+REQUIREMENTS
+============
+Following CPAN modules are required:
+Crypt::GCrypt
+MIME::Base64
+Fuse::Simple
+Fuse
+
+For file plugin:
+File::Slurp
+
+For nessus plugins:
+XML::Simple
+Net::Nessus::XMLRPC
+
+USAGE
+=====
+Usage: ./babushkafs.pl [-n] <-s store> <-S name=value,name2=value2> <-E key=secret,iv=myiv> <mount-path>
+
+ -n     create new filesystem
+ -s <s> use <s> plugin for storage
+ -S <s> set following options for storage plugin
+ -E <s> set following options for encryption plugin
+ -v     verbose
+ -h     this help message
+
+
+EXAMPLES
+========
+Create the filesystem first with -n:
+./babushkafs.pl -n -s file -S "filename=/tmp/myfs" -E "key=my secret key,iv=my init vector" /tmp
+
+When filesystem is created, mount without -n :
+./babushkafs.pl -s file -S "filename=/tmp/myfs" -E "key=my secret key,iv=my init vector" /tmp
+
+Same rule apply, for other filesystems (in short, be careful with -n), here's 
+just few examples for other containers:
+
+./babushkafs.pl -s nessus-policies -S "url=https://localhost:8834/,user=joe,password=mypassword,policyid=1" -E "key=my secret key,iv=my init vector" /tmp
+
+./babushkafs.pl -s nessus-reports -S "url=https://localhost:8834/,user=joe,password=mypassword,reportid=2b212e10-0ef6-d777-3488-3ff52d6ec3bf4627e48e28786911" -E "key=my secret key,iv=my init vector" /tmp
+
+
